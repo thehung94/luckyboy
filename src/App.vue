@@ -1,7 +1,18 @@
 <template>
   <div id="app">
     <div class="prize-icon" >
-      <img src="images/prizes/diamond-prize.svg" width="250px">
+      <div v-if="prize == 1">
+        <img src="images/prizes/gold-prize.svg" width="250px">
+      </div>
+      <div v-else-if="prize == 2">
+        <img src="images/prizes/silver-prize.svg" width="250px">
+      </div>
+      <div v-else-if="prize == 3">
+        <img src="images/prizes/bronze-prize.svg" width="250px">
+      </div>
+      <div v-else>
+        <img src="images/prizes/diamond-prize.svg" width="250px">
+      </div>
     </div>
     <div class="main-screen">
       <div id="display">
@@ -11,29 +22,56 @@
         <h1 v-else class="welcome">Vòng quay may mắn</h1>
       </div>
       <div id="control">
-        <form @submit.prevent="setup">
-          <p>
-            <label>Nhập file danh sách:</label>
-            <input type="file" @change="upload" :disabled="isSetup" ref="upload" />
-          </p>
+        <div class="input-player">
+          <form @submit.prevent="setup">
+            <p>
+              <label>Nhập file danh sách:</label>
+              <input type="file" @change="upload" :disabled="isSetup" ref="upload" />
+            </p>
+            <p>
+              <label>
+                Số người chơi：
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  max="999999"
+                  v-model="total"
+                  number
+                  :disabled="isSetup"
+                  ref="total"
+                />
+              </label>
+              <button :disabled="isSetup">Đồng ý</button>
+            </p>
+          </form>
+        </div>
+        <div class="float-right">
+          <form @reset="reset"></form>
           <p>
             <label>
-              Số người chơi：
+              Số người trùng giải：
               <input
                 type="number"
-                required
-                min="1"
-                max="999999"
-                v-model="total"
+                v-model="round"
                 number
-                :disabled="isSetup"
-                ref="total"
+                required
+                :disabled="!this.isSetup || this.isRolling"
+                min="1"
+                max="10"
+                @input="checkRemaining"
+                ref="round"
               />
             </label>
-            <button :disabled="isSetup">Đồng ý</button>
+          <p>
+            Người chơi còn lại：
+            <span v-text="remaining"></span>
+            <button type="reset" :disabled="!isSetup">Đặt lại</button>
           </p>
-        </form>
-        <form @reset="reset" @submit.prevent="draw">
+        </div>
+        
+        
+        <form  @submit.prevent="draw">
           <p>
             <label>
               Số người trùng giải：
@@ -57,16 +95,20 @@
               ref="begin"
             ></button>
           </p>
-          <p>
-            Người chơi còn lại：
-            <span v-text="remaining"></span>
-            <button type="reset" :disabled="!isSetup">Đặt lại</button>
+          <p class="form-group">
+            Chọn giải thưởng
+            <select class="form-control" name="prize" v-model="prize" required>
+              <option value="1">Giải nhất</option>
+              <option value="2">Giải nhì</option>
+              <option value="3">Giải ba</option>
+              <option value="4">Giải khuyến khích</option>
+            </select>
           </p>
         </form>
       </div>
     </div>
     <div class="winner-display">
-      <WinnerDisplay v-bind:prizes="prizes" />
+      <WinnerDisplay v-bind:prizes="prizes"/>
     </div>
   </div>
 </template>
@@ -88,7 +130,13 @@ export default {
       round: null,
       isRolling: false,
       rollTimer: null,
-      prizes: {goldPrizes:['Hungvt11', 'Hanh1234', 'Tungnd', 'Nhankv']}
+      prizes: {
+        goldPrizes: [],
+        silverPrizes: [],
+        bronzePrizes: [],
+        plusPrizes: [],
+      },
+      prize: null
     };
   },
   computed: {
@@ -192,6 +240,43 @@ export default {
     },
     stopRoll: function() {
       clearTimeout(this.rollTimer);
+      
+      if (this.prize == 1 && this.isRolling) {
+        
+        if (this.prizes.goldPrizes.length) {
+          this.prizes.goldPrizes = this.prizes.goldPrizes.concat(this.winners)
+        } 
+        else {
+          this.prizes.goldPrizes = this.winners
+        }
+        
+      }
+
+      if (this.prize == 2 && this.isRolling) {
+        if (this.prizes.silverPrizes.length) {
+          this.prizes.silverPrizes = this.prizes.silverPrizes.concat(this.winners);
+        } else {
+          this.prizes.silverPrizes = this.winners;
+        }
+        
+      }
+
+      if (this.prize == 3 && this.isRolling) {
+        if (this.prizes.bronzePrizes.length) {
+          this.prizes.bronzePrizes = this.prizes.bronzePrizes.concat(this.winners);
+        } else {
+          this.prizes.bronzePrizes = this.winners  
+        }
+        
+      }
+
+      if (this.prize == 4 && this.isRolling) {
+        if (this.prizes.plusPrizes.length) {
+          this.prizes.plusPrizes = this.prizes.plusPrizes.concat(this.winners);
+        } else {
+          this.prizes.plusPrizes = this.winners  
+        }
+      }
       this.isRolling = false;
     }
   },
@@ -329,7 +414,7 @@ h1.welcome {
 }
 
 #control {
-  top: 440px;
+  top: 525px;
 }
 
 .name {
@@ -437,5 +522,41 @@ input[type="file"]::-webkit-file-upload-button:active {
 .prize-icon {
   text-align: center;
   margin: 18px 0 18px 0;
+}
+
+select {
+  width: 150px;
+  padding: 5px 35px 5px 5px;
+  font-size: 16px;
+  border: 1px solid #ffffff;
+  background: #ffffff;
+  height: 34px;
+  border-radius: 8px;
+}
+
+
+/* CAUTION: Internet Explorer hackery ahead */
+
+
+select::-ms-expand {
+    display: none; /* Remove default arrow in Internet Explorer 10 and 11 */
+}
+
+/* Target Internet Explorer 9 to undo the custom arrow */
+@media screen and (min-width:0\0) {
+    select {
+        background: none\9;
+        padding: 5px\9;
+    }
+}
+.input-player {
+  position: absolute;
+  float: left;
+  text-align: left
+}
+.float-right {
+  position: absolute;
+  right: 10px;
+  text-align: left;
 }
 </style>
