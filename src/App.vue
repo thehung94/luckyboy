@@ -100,7 +100,7 @@
     </div>
     <div class="winner-display" style="background: #4db1d3" >
       <modal name="modal-winner" :scrollable="true"
-        :width="900" transition="pop-out" :height="600" overlayTransition="overlay-fade">
+        :width="900" transition="pop-out" :height="600">
         <div class="modal-header">
           <div class="prize-icon" >
             <div v-if="prize == 1">
@@ -167,7 +167,7 @@ import Vue from "vue";
 import XLSX from 'xlsx';
 import VModal from 'vue-js-modal';
 
-Vue.use(VModal)
+Vue.use(VModal);
 export default {
   name: "app",
   components: {
@@ -208,7 +208,11 @@ export default {
   },
   methods: {
     showMd () {
+      setTimeout(() => {
+        this.$modal.show('modal-winner');  
       this.$modal.show('modal-winner');
+        this.$modal.show('modal-winner');  
+      }, 500);
     },
     hideMd () {
       this.$modal.hide('modal-winner');
@@ -355,9 +359,6 @@ export default {
         this.showMd();
       }
       this.isRolling = false;
-    },
-    openModal() {
-      this.showModal = true;
     }
   },
   watch: {
@@ -463,7 +464,7 @@ body {
   position: relative;
   margin: 0;
   font-size: 16px;
-  font-family: 'Lobster', cursive;
+  font-family: 'UTM AvoBold';
   color: #fff;
 }
 
