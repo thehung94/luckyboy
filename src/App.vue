@@ -107,20 +107,79 @@
         </form>
       </div>
     </div>
-    <div class="winner-display">
-      <WinnerDisplay v-bind:prizes="prizes"/>
+    <div class="winner-display" style="background: #4db1d3" >
+      <modal name="modal-winner" :scrollable="true"
+        :width="900" transition="pop-out" :height="600" overlayTransition="overlay-fade">
+        <div class="modal-header">
+          <div class="prize-icon" >
+            <div v-if="prize == 1">
+              <img src="images/prizes/gold-prize.svg" width="250px">
+            </div>
+            <div v-else-if="prize == 2">
+              <img src="images/prizes/silver-prize.svg" width="250px">
+            </div>
+            <div v-else-if="prize == 3">
+              <img src="images/prizes/bronze-prize.svg" width="250px">
+            </div>
+            <div v-else>
+              <img src="images/prizes/diamond-prize.svg" width="250px">
+            </div>
+          </div>
+        </div>
+        <div class="modal-body" style="color: red">
+            <div class="winner-display">
+              <div class="wd-list wd-gold-prize" :hidden="!prizes.goldPrizes || !prizes.goldPrizes.length || prize != 1">
+                <ul class="wd-list-group">
+                  <div class="wd-list-item">
+                    <li v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize">{{ goldPrize }}</li>
+                  </div>
+                </ul>
+              </div>
+              <div class="wd-list wd-silver-prize" :hidden="!prizes.silverPrizes || !prizes.silverPrizes.length || prize != 2">
+                <ul class="wd-list-group">
+                  <div class="wd-list-item">
+                    <li v-for="silverPrize in prizes.silverPrizes" v-bind:key="silverPrize">{{ silverPrize }}</li>
+                  </div>
+                </ul>
+              </div>
+              <div class="wd-list wd-bronze-prize" :hidden="!prizes.bronzePrizes || !prizes.bronzePrizes.length || prize != 3">
+                <ul class="wd-list-group">
+                  <div class="wd-list-item">
+                    <li v-for="bronzePrize in prizes.bronzePrizes" v-bind:key="bronzePrize">{{ bronzePrize }}</li>
+                  </div>
+                </ul>
+              </div>
+              <div class="wd-list wd-plus-prize" :hidden="!prizes.plusPrizes || !prizes.plusPrizes.length || prize != 4">
+                <ul class="wd-list-group">
+                  <div class="wd-list-item">
+                    <li v-for="plusPrize in prizes.plusPrizes" v-bind:key="plusPrize">{{ plusPrize }}</li>
+                  </div>
+                </ul>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <div slot="top-right btn green">
+            <button id="btn-close-modal" v-on:click="hideMd">
+              Close
+            </button>
+          </div>
+        </div>
+      </modal>
     </div>
+    
   </div>
 </template>
 
 <script>
 import Vue from "vue";
-import WinnerDisplay from "./components/WinnerDisplay";
+import XLSX from 'xlsx';
+import VModal from 'vue-js-modal';
 
+Vue.use(VModal)
 export default {
   name: "app",
   components: {
-    WinnerDisplay
   },
   data: function() {
     return {
@@ -136,7 +195,9 @@ export default {
         bronzePrizes: [],
         plusPrizes: [],
       },
-      prize: null
+      prize: null,
+      setupType: 1,
+      listPlayer: null
     };
   },
   computed: {
@@ -155,6 +216,12 @@ export default {
     }
   },
   methods: {
+    showMd () {
+      this.$modal.show('modal-winner');
+    },
+    hideMd () {
+      this.$modal.hide('modal-winner');
+    },
     setup() {
       if (this.$refs.total.validationMessage) {
         alert(this.$refs.total.validationMessage);
@@ -169,28 +236,21 @@ export default {
         round.focus();
       });
     },
-    upload({ target }) {
+    async upload({ target }) {
+      this.setupType = 2;
       let file = target.files[0];
 
       if (!file) {
         return;
       }
 
-      let reader = new FileReader();
-
-      reader.onload = ({ target }) => {
-        this.candidates = target.result
-          .trim()
-          .split("\n")
-          .map(line => line.trim());
+      await parserXlsx(file, (players) => {
+        for (let index = 0; index < players.length; index++) {
+          this.candidates.push(players[index].Code.toString());
+        }
+        this.listPlayer = players;
         this.total = this.candidates.length;
-
-        let round = this.$refs.round;
-        this.$nextTick(() => {
-          round.focus();
-        });
-      };
-      reader.readAsText(file);
+      });
     },
     reset() {
       this.stopRoll();
@@ -242,42 +302,71 @@ export default {
       clearTimeout(this.rollTimer);
       
       if (this.prize == 1 && this.isRolling) {
-        
-        if (this.prizes.goldPrizes.length) {
-          this.prizes.goldPrizes = this.prizes.goldPrizes.concat(this.winners)
-        } 
+        if (this.setupType == 2) {
+          for (let i = 0; i < this.listPlayer.length; i++) {
+            for (let j = 0; j < this.winners.length; j++) {
+              if (this.listPlayer[i].Code == this.winners[j]) {
+                this.prizes.goldPrizes.push(this.listPlayer[i].Name.toString().trim());
+              }
+            }
+          }
+        }
         else {
           this.prizes.goldPrizes = this.winners
         }
-        
       }
 
       if (this.prize == 2 && this.isRolling) {
-        if (this.prizes.silverPrizes.length) {
-          this.prizes.silverPrizes = this.prizes.silverPrizes.concat(this.winners);
-        } else {
-          this.prizes.silverPrizes = this.winners;
+        if (this.setupType == 2) {
+          for (let i = 0; i < this.listPlayer.length; i++) {
+            for (let j = 0; j < this.winners.length; j++) {
+              if (this.listPlayer[i].Code == this.winners[j]) {
+                this.prizes.silverPrizes.push(this.listPlayer[i].Name.toString().trim());
+              }
+            }
+          }
         }
-        
+        else {
+          this.prizes.silverPrizes = this.winners
+        }
       }
 
       if (this.prize == 3 && this.isRolling) {
-        if (this.prizes.bronzePrizes.length) {
-          this.prizes.bronzePrizes = this.prizes.bronzePrizes.concat(this.winners);
-        } else {
-          this.prizes.bronzePrizes = this.winners  
+        if (this.setupType == 2) {
+          for (let i = 0; i < this.listPlayer.length; i++) {
+            for (let j = 0; j < this.winners.length; j++) {
+              if (this.listPlayer[i].Code == this.winners[j]) {
+                this.prizes.bronzePrizes.push(this.listPlayer[i].Name.toString().trim());
+              }
+            }
+          }
         }
-        
+        else {
+          this.prizes.bronzePrizes = this.winners
+        }
       }
 
       if (this.prize == 4 && this.isRolling) {
-        if (this.prizes.plusPrizes.length) {
-          this.prizes.plusPrizes = this.prizes.plusPrizes.concat(this.winners);
-        } else {
-          this.prizes.plusPrizes = this.winners  
+        if (this.setupType == 2) {
+          for (let i = 0; i < this.listPlayer.length; i++) {
+            for (let j = 0; j < this.winners.length; j++) {
+              if (this.listPlayer[i].Code == this.winners[j]) {
+                this.prizes.plusPrizes.push(this.listPlayer[i].Name.toString().trim());
+              }
+            }
+          }        
+        }
+        else {
+          this.prizes.plusPrizes = this.winners
         }
       }
+      if (this.isRolling) {
+        this.showMd();
+      }
       this.isRolling = false;
+    },
+    openModal() {
+      this.showModal = true;
     }
   },
   watch: {
@@ -313,6 +402,29 @@ function fitDisplay() {
       }
     }
   });
+}
+/** HELPERS **/
+function fixdata(data) {
+	var o = "", l = 0, w = 10240;
+	for(; l<data.byteLength/w; ++l) o+=String.fromCharCode.apply(null,new Uint8Array(data.slice(l*w,l*w+w)));
+	o+=String.fromCharCode.apply(null, new Uint8Array(data.slice(l*w)));
+	return o;
+}
+
+/** PARSING **/
+async function parserXlsx(file, callback) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var results, 
+          data = e.target.result, 
+          fixedData = fixdata(data), 
+          workbook=XLSX.read(btoa(fixedData), {type: 'base64'}), 
+          firstSheetName = workbook.SheetNames[0], 
+          worksheet = workbook.Sheets[firstSheetName];
+      results=XLSX.utils.sheet_to_json(worksheet);
+      callback(results);
+    };
+    reader.readAsArrayBuffer(file);
 }
 
 function swap(items, i, j) {
@@ -350,10 +462,13 @@ function pad(number, digits) {
 
 html {
   min-height: 720px;
-  background: #4db1d3;
+  background-image: url('/images/background1.jpg');
+  background-size: contain;
 }
 
 body {
+  /* background-image: url("/images/background1.jpg");
+  background-repeat: no-repeat; */
   position: relative;
   margin: 0;
   font-size: 16px;
@@ -514,9 +629,7 @@ input[type="file"]::-webkit-file-upload-button:active {
 }
 
 .winner-display {
-  position: absolute;
-  top: 10%;
-  right: 10%;
+  text-align: center;
 }
 
 .prize-icon {
@@ -559,4 +672,19 @@ select::-ms-expand {
   right: 10px;
   text-align: left;
 }
+
+#btn-close-modal {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: red;
+}
+
+.wd-list-item {
+  font-size: 32px;
+}
+ul {
+  list-style-type: none;
+}
+
 </style>
