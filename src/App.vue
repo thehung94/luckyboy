@@ -1,25 +1,16 @@
 <template>
   <div id="app">
-    <div class="prize-icon" >
-      <div v-if="prize == 1">
-        <img src="images/prizes/gold-prize.svg" width="250px">
-      </div>
-      <div v-else-if="prize == 2">
-        <img src="images/prizes/silver-prize.svg" width="250px">
-      </div>
-      <div v-else-if="prize == 3">
-        <img src="images/prizes/bronze-prize.svg" width="250px">
-      </div>
-      <div v-else>
-        <img src="images/prizes/diamond-prize.svg" width="250px">
-      </div>
-    </div>
     <div class="main-screen">
       <div id="display">
         <h1 v-if="winners.length">
-          <span class="name" v-for="winner in winners" v-bind:key="winner">{{ winner }}</span>
+          <div class="section-body">
+            <div class="section-body-inner">
+              <span class="name" v-for="winner in winners" v-bind:key="winner">{{ winner }}</span>
+            </div>
+          </div>
+          
         </h1>
-        <h1 v-else class="welcome">Vòng quay may mắn</h1>
+        <h1 v-else class="welcome">Quay số trúng thưởng </h1>
       </div>
       <div id="control">
         <div class="input-player">
@@ -463,7 +454,7 @@ function pad(number, digits) {
 html {
   min-height: 720px;
   background-image: url('/images/background1.jpg');
-  background-size: contain;
+  background-size: cover;
 }
 
 body {
@@ -541,6 +532,7 @@ h1.welcome {
   border-radius: 5px;
   padding: 0.1em;
   text-align: center;
+  background: #f1c40f;
 }
 
 button,
@@ -685,6 +677,29 @@ select::-ms-expand {
 }
 ul {
   list-style-type: none;
+}
+.section-body {
+  background: #f39c0f;
+  padding: 11px;
+  border: 3px solid #f5db79;
+  border-radius: 15px;
+  display: inline-block;
+  position: relative;
+  top: -3px;
+  margin-bottom: 37px;
+  max-width: 100%;
+}
+.section-body-inner {
+  padding: 0 4px;
+  overflow: hidden;
+  border-radius: 10px;
+  margin: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+#display {
+  top: 40vh;
 }
 
 </style>
