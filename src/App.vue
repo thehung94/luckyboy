@@ -82,10 +82,10 @@
         <div class="modal-body" style="color: #000000">
             <table >
               <tr>
-                <th>Mã dự thưởng</th>
-                <th>Họ tên</th>
-                <th>Chức danh</th>
-                <th>Đơn vị công tác</th>
+                <th><b>Mã dự thưởng</b></th>
+                <th><b>Họ tên</b></th>
+                <th><b>Chức danh</b></th>
+                <th><b>Đơn vị công tác</b></th>
               </tr>
               <tr v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize"
                   :hidden="!prizes.goldPrizes || !prizes.goldPrizes.length || prize != 1"
@@ -267,8 +267,7 @@ export default {
       if (!this.audio.paused) {
         this.audio.pause();
       }
-
-      
+      this.audio.src = "./ringtone/background.mp3";
       this.audio.loop = true;
       this.audio.play();
       this.stopRoll();
@@ -281,9 +280,10 @@ export default {
 
       
       setTimeout(() => {
-       
-        this.stopRoll();
-      }, 15000);
+        if (this.isRolling) {
+          this.stopRoll();  
+        }
+      }, 120000);
     },
     stopRoll: function() {
       clearTimeout(this.rollTimer);
@@ -301,10 +301,11 @@ export default {
         
       if (this.prize == 1 && this.isRolling) {
         if (this.setupType == 2) {
+          this.prizes.goldPrizes = [];
           for (let i = 0; i < this.listPlayer.length; i++) {
             for (let j = 0; j < this.winners.length; j++) {
               if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.goldPrizes.push(this.listPlayer[i]);
+                this.prizes.goldPrizes.push(this.listPlayer[i]);  
               }
             }
           }
@@ -315,6 +316,7 @@ export default {
       }
 
       if (this.prize == 2 && this.isRolling) {
+        this.prizes.silverPrizes = [];
         if (this.setupType == 2) {
           for (let i = 0; i < this.listPlayer.length; i++) {
             for (let j = 0; j < this.winners.length; j++) {
@@ -331,6 +333,7 @@ export default {
 
       if (this.prize == 3 && this.isRolling) {
         if (this.setupType == 2) {
+          this.prizes.bronzePrizes = [];
           for (let i = 0; i < this.listPlayer.length; i++) {
             for (let j = 0; j < this.winners.length; j++) {
               if (this.listPlayer[i].Code == this.winners[j]) {
@@ -346,6 +349,7 @@ export default {
 
       if (this.prize == 4 && this.isRolling) {
         if (this.setupType == 2) {
+          this.prizes.plusPrizes = [];
           for (let i = 0; i < this.listPlayer.length; i++) {
             for (let j = 0; j < this.winners.length; j++) {
               if (this.listPlayer[i].Code == this.winners[j]) {
