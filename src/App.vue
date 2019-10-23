@@ -167,6 +167,9 @@ export default {
   name: "app",
   components: {
   },
+  mounted() {
+    this.playSound("./ringtone/background.mp3");
+  },
   data: function() {
     return {
       candidates: [],
@@ -183,7 +186,8 @@ export default {
       },
       prize: null,
       setupType: 1,
-      listPlayer: null
+      listPlayer: null,
+      audio: new Audio()
     };
   },
   computed: {
@@ -202,6 +206,12 @@ export default {
     }
   },
   methods: {
+    playSound (sound) {
+      if(sound) {
+        this.audio = new Audio(sound);
+        this.audio.play();
+      }
+    },
     showMd () {
       setTimeout(() => {
         this.$modal.show('modal-winner');  
@@ -283,6 +293,11 @@ export default {
     },
     startRoll() {
       this.stopRoll();
+      if (this.audio) {
+        this.audio.stop();
+        audio.src("./ringtone/sm-roller-loop.mp3");
+      }
+      this.playSound("./ringtone/background.mp3");
       this.rollTimer = setInterval(() => {
         this.shuffle();
         this.winners = this.candidates.slice(0, this.round);
@@ -489,7 +504,6 @@ input::-moz-focus-inner {
 
 #display,
 #control {
-  position: absolute;
   width: 100%;
   text-align: center;
 }
@@ -518,7 +532,8 @@ h1.welcome {
 }
 
 #control {
-  top: 525px;
+  position: fixed;
+  bottom: 0px;
 }
 
 .name {
