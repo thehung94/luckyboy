@@ -264,6 +264,13 @@ export default {
       shuffle(this.candidates);
     },
     startRoll() {
+      if (!this.audio.paused) {
+        this.audio.pause();
+      }
+
+      
+      this.audio.loop = true;
+      this.audio.play();
       this.stopRoll();
       this.rollTimer = setInterval(() => {
         this.shuffle();
@@ -271,10 +278,27 @@ export default {
       }, 1000 / 15);
 
       this.isRolling = true;
+
+      
+      setTimeout(() => {
+       
+        this.stopRoll();
+      }, 15000);
     },
     stopRoll: function() {
       clearTimeout(this.rollTimer);
-      
+      if (this.isRolling) {
+        this.audio.pause();
+        this.audio.src = './ringtone/sm-spin.mp3';
+        this.audio.loop = false;
+        this.audio.play();
+        setTimeout(() => {
+          this.audio.src = './ringtone/game-tada.mp3';
+          this.audio.play();  
+        }, 1000);
+        
+      }
+        
       if (this.prize == 1 && this.isRolling) {
         if (this.setupType == 2) {
           for (let i = 0; i < this.listPlayer.length; i++) {
