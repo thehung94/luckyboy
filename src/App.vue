@@ -38,34 +38,35 @@
           </form>
         </div>
         <div class="float-right">
-          <form @reset="reset"></form>
-          <p>
-            <label>
-              Số người trùng giải：
-              <input
-                type="number"
-                v-model="round"
-                number
-                required
-                :disabled="!this.isSetup || this.isRolling"
-                min="1"
-                max="10"
-                @input="checkRemaining"
-                ref="round"
-              />
-            </label>
-          <p>
-            Người chơi còn lại：
-            <span v-text="remaining"></span>
-            <button type="reset" :disabled="!isSetup">Đặt lại</button>
-          </p>
+          <form @reset="reset">
+            <p>
+              <label>
+                Số người trùng giải：
+                <input
+                  type="number"
+                  v-model="round"
+                  number
+                  required
+                  :disabled="!this.isSetup || this.isRolling"
+                  min="1"
+                  max="10"
+                  @input="checkRemaining"
+                  ref="round"
+                />
+              </label>
+            <p>
+              Người chơi còn lại：
+              <span v-text="remaining"></span>
+              <button type="reset" :disabled="!isSetup">Đặt lại</button>
+            </p>
+          </form>
         </div>
         
         
         <form  @submit.prevent="draw">
           <p>
             <label>
-              Số người trùng giải：
+              Số người trúng giải：
               <input
                 type="number"
                 v-model="round"
@@ -99,66 +100,60 @@
       </div>
     </div>
     <div class="winner-display" style="background: #4db1d3" >
-      <modal name="modal-winner" :scrollable="true"
-        :width="900" transition="pop-out" :height="600">
+      <modal name="modal-winner" :scrollable="true" transition="pop-out">
         <div class="modal-header">
-          <div class="prize-icon" >
-            <div v-if="prize == 1">
-              <img src="images/prizes/gold-prize.svg" width="250px">
-            </div>
-            <div v-else-if="prize == 2">
-              <img src="images/prizes/silver-prize.svg" width="250px">
-            </div>
-            <div v-else-if="prize == 3">
-              <img src="images/prizes/bronze-prize.svg" width="250px">
-            </div>
-            <div v-else>
-              <img src="images/prizes/diamond-prize.svg" width="250px">
-            </div>
+          <div class="modal-title">Danh sách trúng thưởng</div>
+          <button id="btn-close-modal" v-on:click="hideMd">
+            X
+          </button>
+        </div>
+        <div class="modal-body" style="color: #000000">
+            <table >
+              <tr>
+                <th>Mã dự thưởng</th>
+                <th>Họ tên</th>
+                <th>Chức danh</th>
+                <th>Đơn vị công tác</th>
+              </tr>
+              <tr v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize"
+                  :hidden="!prizes.goldPrizes || !prizes.goldPrizes.length || prize != 1"
+                >
+                <th>{{ goldPrize.Code }}</th>
+                <th>{{ goldPrize.Name }}</th>
+                <th>{{ goldPrize.Position }}</th>
+                <th>{{ goldPrize.Company }}</th>
+              </tr>
+
+              <tr v-for="silverPrize in prizes.silverPrizes" v-bind:key="silverPrize"
+                  :hidden="!prizes.silverPrizes || !prizes.silverPrizes.length || prize != 2"
+                >
+                <th>{{ silverPrize.Code }}</th>
+                <th>{{ silverPrize.Name }}</th>
+                <th>{{ silverPrize.Position }}</th>
+                <th>{{ silverPrize.Company }}</th>
+              </tr>
+
+              <tr v-for="bronzePrize in prizes.bronzePrizes" v-bind:key="bronzePrize"
+                  :hidden="!prizes.bronzePrizes || !prizes.bronzePrizes.length || prize != 3"
+                >
+                <th>{{ bronzePrize.Code }}</th>
+                <th>{{ bronzePrize.Name }}</th>
+                <th>{{ bronzePrize.Position }}</th>
+                <th>{{ bronzePrize.Company }}</th>
+              </tr>
+
+              <tr v-for="plusPrize in prizes.plusPrizes" v-bind:key="plusPrize"
+                  :hidden="!prizes.plusPrizes || !prizes.plusPrizes.length || prize != 4"
+                >
+                <th>{{ plusPrize.Code }}</th>
+                <th>{{ plusPrize.Name }}</th>
+                <th>{{ plusPrize.Position }}</th>
+                <th>{{ plusPrize.Company }}</th>
+              </tr>
+            </table>
           </div>
-        </div>
-        <div class="modal-body" style="color: red">
-            <div class="winner-display">
-              <div class="wd-list wd-gold-prize" :hidden="!prizes.goldPrizes || !prizes.goldPrizes.length || prize != 1">
-                <ul class="wd-list-group">
-                  <div class="wd-list-item">
-                    <li v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize">{{ goldPrize }}</li>
-                  </div>
-                </ul>
-              </div>
-              <div class="wd-list wd-silver-prize" :hidden="!prizes.silverPrizes || !prizes.silverPrizes.length || prize != 2">
-                <ul class="wd-list-group">
-                  <div class="wd-list-item">
-                    <li v-for="silverPrize in prizes.silverPrizes" v-bind:key="silverPrize">{{ silverPrize }}</li>
-                  </div>
-                </ul>
-              </div>
-              <div class="wd-list wd-bronze-prize" :hidden="!prizes.bronzePrizes || !prizes.bronzePrizes.length || prize != 3">
-                <ul class="wd-list-group">
-                  <div class="wd-list-item">
-                    <li v-for="bronzePrize in prizes.bronzePrizes" v-bind:key="bronzePrize">{{ bronzePrize }}</li>
-                  </div>
-                </ul>
-              </div>
-              <div class="wd-list wd-plus-prize" :hidden="!prizes.plusPrizes || !prizes.plusPrizes.length || prize != 4">
-                <ul class="wd-list-group">
-                  <div class="wd-list-item">
-                    <li v-for="plusPrize in prizes.plusPrizes" v-bind:key="plusPrize">{{ plusPrize }}</li>
-                  </div>
-                </ul>
-              </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-          <div slot="top-right btn green">
-            <button id="btn-close-modal" v-on:click="hideMd">
-              Close
-            </button>
-          </div>
-        </div>
       </modal>
     </div>
-    
   </div>
 </template>
 
@@ -241,7 +236,9 @@ export default {
 
       await parserXlsx(file, (players) => {
         for (let index = 0; index < players.length; index++) {
-          this.candidates.push(players[index].Code.toString());
+          if (players[index] && players[index].Code) {
+             this.candidates.push(players[index].Code.toString());
+          }
         }
         this.listPlayer = players;
         this.total = this.candidates.length;
@@ -301,7 +298,7 @@ export default {
           for (let i = 0; i < this.listPlayer.length; i++) {
             for (let j = 0; j < this.winners.length; j++) {
               if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.goldPrizes.push(this.listPlayer[i].Name.toString().trim());
+                this.prizes.goldPrizes.push(this.listPlayer[i]);
               }
             }
           }
@@ -316,7 +313,7 @@ export default {
           for (let i = 0; i < this.listPlayer.length; i++) {
             for (let j = 0; j < this.winners.length; j++) {
               if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.silverPrizes.push(this.listPlayer[i].Name.toString().trim());
+                this.prizes.silverPrizes.push(this.listPlayer[i]);
               }
             }
           }
@@ -331,7 +328,7 @@ export default {
           for (let i = 0; i < this.listPlayer.length; i++) {
             for (let j = 0; j < this.winners.length; j++) {
               if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.bronzePrizes.push(this.listPlayer[i].Name.toString().trim());
+                this.prizes.bronzePrizes.push(this.listPlayer[i]);
               }
             }
           }
@@ -346,7 +343,7 @@ export default {
           for (let i = 0; i < this.listPlayer.length; i++) {
             for (let j = 0; j < this.winners.length; j++) {
               if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.plusPrizes.push(this.listPlayer[i].Name.toString().trim());
+                this.prizes.plusPrizes.push(this.listPlayer[i]);
               }
             }
           }        
@@ -668,9 +665,11 @@ select::-ms-expand {
 
 #btn-close-modal {
   position: absolute;
-  bottom: 10px;
+  bottom: 5px;
   right: 10px;
-  background: red;
+  background: none;
+  border: 0px;
+  color: #000000;
 }
 
 .wd-list-item {
@@ -701,6 +700,45 @@ ul {
 
 #display {
   top: 40vh;
+}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+  font-weight: 400;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.modal-header {
+  background: #ffd211;
+  border-bottom: 5px solid #fff31d;
+  position: relative;
+  padding: 18px 0 15px;
+  text-align: center;
+  font-size: 24px;
+  color: #000000;
+}
+
+.v--modal-box.v--modal {
+  width: 70% !important;
+  height: 50% !important;
+  position: absolute !important;
+  top: 15% !important;
+  left: 15% !important;
+  min-height: 500px;
+}
+
+.modal-body {
+  overflow-y: scroll;
 }
 
 </style>
