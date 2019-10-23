@@ -14,52 +14,24 @@
       </div>
       <div id="control">
         <div class="input-player">
-          <form @submit.prevent="setup">
+          <form @submit.prevent="setup" @reset="reset">
             <p>
-              <label>Nhập file danh sách:</label>
               <input type="file" @change="upload" :disabled="isSetup" ref="upload" />
             </p>
             <p>
-              <label>
-                Số người chơi：
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  max="999999"
-                  v-model="total"
-                  number
-                  :disabled="isSetup"
-                  ref="total"
-                />
-              </label>
+              <button type="reset" :disabled="!isSetup">Đặt lại</button>
               <button :disabled="isSetup">Đồng ý</button>
             </p>
           </form>
+          <form >
+              
+          </form>
         </div>
         <div class="float-right">
-          <form @reset="reset">
-            <p>
-              <label>
-                Số người trùng giải：
-                <input
-                  type="number"
-                  v-model="round"
-                  number
-                  required
-                  :disabled="!this.isSetup || this.isRolling"
-                  min="1"
-                  max="10"
-                  @input="checkRemaining"
-                  ref="round"
-                />
-              </label>
-            <p>
+           <p>
               Người chơi còn lại：
               <span v-text="remaining"></span>
-              <button type="reset" :disabled="!isSetup">Đặt lại</button>
             </p>
-          </form>
         </div>
         
         
@@ -293,11 +265,6 @@ export default {
     },
     startRoll() {
       this.stopRoll();
-      if (this.audio) {
-        this.audio.stop();
-        audio.src("./ringtone/sm-roller-loop.mp3");
-      }
-      this.playSound("./ringtone/background.mp3");
       this.rollTimer = setInterval(() => {
         this.shuffle();
         this.winners = this.candidates.slice(0, this.round);
