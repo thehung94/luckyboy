@@ -87,7 +87,7 @@
                 <th><b>Chức danh</b></th>
                 <th><b>Đơn vị công tác</b></th>
               </tr>
-              <tr v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize"
+              <tr v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize.Code"
                   :hidden="!prizes.goldPrizes || !prizes.goldPrizes.length || prize != 1"
                 >
                 <th>{{ goldPrize.Code }}</th>
@@ -96,7 +96,7 @@
                 <th>{{ goldPrize.Company }}</th>
               </tr>
 
-              <tr v-for="silverPrize in prizes.silverPrizes" v-bind:key="silverPrize"
+              <tr v-for="silverPrize in prizes.silverPrizes" v-bind:key="silverPrize.Code"
                   :hidden="!prizes.silverPrizes || !prizes.silverPrizes.length || prize != 2"
                 >
                 <th>{{ silverPrize.Code }}</th>
@@ -105,7 +105,7 @@
                 <th>{{ silverPrize.Company }}</th>
               </tr>
 
-              <tr v-for="bronzePrize in prizes.bronzePrizes" v-bind:key="bronzePrize"
+              <tr v-for="bronzePrize in prizes.bronzePrizes" v-bind:key="bronzePrize.Code"
                   :hidden="!prizes.bronzePrizes || !prizes.bronzePrizes.length || prize != 3"
                 >
                 <th>{{ bronzePrize.Code }}</th>
@@ -114,7 +114,7 @@
                 <th>{{ bronzePrize.Company }}</th>
               </tr>
 
-              <tr v-for="plusPrize in prizes.plusPrizes" v-bind:key="plusPrize"
+              <tr v-for="plusPrize in prizes.plusPrizes" v-bind:key="plusPrize.Code"
                   :hidden="!prizes.plusPrizes || !prizes.plusPrizes.length || prize != 4"
                 >
                 <th>{{ plusPrize.Code }}</th>
