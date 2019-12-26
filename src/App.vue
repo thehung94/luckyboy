@@ -62,7 +62,7 @@
           <p class="form-group">
             Chọn giải thưởng
             <select class="form-control" name="prize" v-model="prize" required>
-              <option value="5">Giải nhất</option>
+              <option value="5">Giải đặc biệt</option>
               <option value="1">Giải nhất</option>
               <option value="2">Giải nhì</option>
               <option value="3">Giải ba</option>
@@ -87,6 +87,14 @@
                 <th><b>Họ tên</b></th>
                 <th><b>Chức danh</b></th>
                 <th><b>Đơn vị công tác</b></th>
+              </tr>
+              <tr v-for="specialPrize in prizes.specialPrizes" v-bind:key="specialPrize.Code"
+                  :hidden="!prizes.specialPrizes || !prizes.specialPrizes.length || prize != 1"
+                >
+                <th>{{ specialPrize.Code }}</th>
+                <th>{{ specialPrize.Name }}</th>
+                <th>{{ specialPrize.Position }}</th>
+                <th>{{ specialPrize.Company }}</th>
               </tr>
               <tr v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize.Code"
                   :hidden="!prizes.goldPrizes || !prizes.goldPrizes.length || prize != 1"
@@ -152,6 +160,7 @@ export default {
       isRolling: false,
       rollTimer: null,
       prizes: {
+        specialPrizes: [],
         goldPrizes: [],
         silverPrizes: [],
         bronzePrizes: [],
@@ -298,6 +307,22 @@ export default {
           this.audio.play();  
         }, 1000);
         
+      }
+
+      if (this.prize == 5 && this.isRolling) {
+        if (this.setupType == 2) {
+          this.prizes.specialPrizes = [];
+          for (let i = 0; i < this.listPlayer.length; i++) {
+            for (let j = 0; j < this.winners.length; j++) {
+              if (this.listPlayer[i].Code == this.winners[j]) {
+                this.prizes.specialPrizes.push(this.listPlayer[i]);  
+              }
+            }
+          }
+        }
+        else {
+          this.prizes.specialPrizes = this.winners
+        }
       }
         
       if (this.prize == 1 && this.isRolling) {
