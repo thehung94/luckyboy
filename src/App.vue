@@ -62,6 +62,7 @@
           <p class="form-group">
             Chọn giải thưởng
             <select class="form-control" name="prize" v-model="prize" required>
+              <option value="5">Giải nhất</option>
               <option value="1">Giải nhất</option>
               <option value="2">Giải nhì</option>
               <option value="3">Giải ba</option>
