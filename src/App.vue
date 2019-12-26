@@ -85,24 +85,24 @@
               <tr>
                 <th><b>Mã dự thưởng</b></th>
                 <th><b>Họ tên</b></th>
-                <th><b>Chức danh</b></th>
-                <th><b>Đơn vị công tác</b></th>
+                <!-- <th><b>Chức danh</b></th>
+                <th><b>Đơn vị công tác</b></th> -->
               </tr>
               <tr v-for="specialPrize in prizes.specialPrizes" v-bind:key="specialPrize.Code"
                   :hidden="!prizes.specialPrizes || !prizes.specialPrizes.length || prize != 5"
                 >
                 <th>{{ specialPrize.Code }}</th>
                 <th>{{ specialPrize.Name }}</th>
-                <th>{{ specialPrize.Position }}</th>
-                <th>{{ specialPrize.Company }}</th>
+                <!-- <th>{{ specialPrize.Position }}</th>
+                <th>{{ specialPrize.Company }}</th> -->
               </tr>
               <tr v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize.Code"
                   :hidden="!prizes.goldPrizes || !prizes.goldPrizes.length || prize != 1"
                 >
                 <th>{{ goldPrize.Code }}</th>
                 <th>{{ goldPrize.Name }}</th>
-                <th>{{ goldPrize.Position }}</th>
-                <th>{{ goldPrize.Company }}</th>
+                <!-- <th>{{ goldPrize.Position }}</th>
+                <th>{{ goldPrize.Company }}</th> -->
               </tr>
 
               <tr v-for="silverPrize in prizes.silverPrizes" v-bind:key="silverPrize.Code"
@@ -110,8 +110,8 @@
                 >
                 <th>{{ silverPrize.Code }}</th>
                 <th>{{ silverPrize.Name }}</th>
-                <th>{{ silverPrize.Position }}</th>
-                <th>{{ silverPrize.Company }}</th>
+                <!-- <th>{{ silverPrize.Position }}</th>
+                <th>{{ silverPrize.Company }}</th> -->
               </tr>
 
               <tr v-for="bronzePrize in prizes.bronzePrizes" v-bind:key="bronzePrize.Code"
@@ -119,8 +119,8 @@
                 >
                 <th>{{ bronzePrize.Code }}</th>
                 <th>{{ bronzePrize.Name }}</th>
-                <th>{{ bronzePrize.Position }}</th>
-                <th>{{ bronzePrize.Company }}</th>
+                <!-- <th>{{ bronzePrize.Position }}</th>
+                <th>{{ bronzePrize.Company }}</th> -->
               </tr>
 
               <tr v-for="plusPrize in prizes.plusPrizes" v-bind:key="plusPrize.Code"
@@ -128,8 +128,8 @@
                 >
                 <th>{{ plusPrize.Code }}</th>
                 <th>{{ plusPrize.Name }}</th>
-                <th>{{ plusPrize.Position }}</th>
-                <th>{{ plusPrize.Company }}</th>
+                <!-- <th>{{ plusPrize.Position }}</th>
+                <th>{{ plusPrize.Company }}</th> -->
               </tr>
             </table>
           </div>
