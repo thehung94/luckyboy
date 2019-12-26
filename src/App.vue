@@ -89,7 +89,7 @@
                 <th><b>Đơn vị công tác</b></th>
               </tr>
               <tr v-for="specialPrize in prizes.specialPrizes" v-bind:key="specialPrize.Code"
-                  :hidden="!prizes.specialPrizes || !prizes.specialPrizes.length || prize != 1"
+                  :hidden="!prizes.specialPrizes || !prizes.specialPrizes.length || prize != 5"
                 >
                 <th>{{ specialPrize.Code }}</th>
                 <th>{{ specialPrize.Name }}</th>
