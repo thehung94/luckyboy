@@ -71,7 +71,7 @@ export default {
   },
   data: function() {
     return {
-      candidates:[],
+      candidates: [],
       winners: [],
       total: null,
       round: null,
@@ -80,23 +80,13 @@ export default {
       prizes: {
         specialPrizes: []
       },
-      prize: null,
+      prize: 5,
       setupType: 1,
       listPlayer: null,
       audio: new Audio()
     };
   },
   computed: {
-    defaultVal: {
-      get() {
-        let data = []
-        for (let index = 1; index < 200; index++) {
-          const element = index
-          data.push(element)
-        }
-        return data
-      }
-    },
     isSetup: {
       get() {
         return this.candidates.length > 0;
@@ -144,11 +134,10 @@ export default {
     },
     reset() {
       this.stopRoll();
-      this.candidates = this.defaultVal();
+      this.candidates = [];
       this.total = null;
       this.round = null;
       this.winners = [];
-      this.$refs.upload.value = "";
     },
     checkRemaining({ target }) {
       let validity = "";
@@ -178,7 +167,7 @@ export default {
     },
     shuffle() {
       let data = []
-      for (let index = 1; index < 200; index++) {
+      for (let index = 1; index <= 200; index++) {
         const element = index
         data.push(element)
       }
