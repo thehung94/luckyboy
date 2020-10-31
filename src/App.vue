@@ -13,61 +13,14 @@
         <h1 v-else class="welcome">Quay số trúng thưởng </h1>
       </div>
       <div id="control">
-        <div class="input-player">
-          <form @submit.prevent="setup" @reset="reset">
-            <p>
-              <input type="file" @change="upload" :disabled="isSetup" ref="upload" />
-            </p>
-            <p>
-              <button type="reset" :disabled="!isSetup">Đặt lại</button>
-              <button :disabled="isSetup">Đồng ý</button>
-            </p>
-          </form>
-          <form >
-              
-          </form>
-        </div>
-        <div class="float-right">
-           <p>
-              Người chơi còn lại：
-              <span v-text="remaining"></span>
-            </p>
-        </div>
-        
-        
         <form  @submit.prevent="draw">
           <p>
-            <label>
-              Số người trúng giải：
-              <input
-                type="number"
-                v-model="round"
-                number
-                required
-                :disabled="!this.isSetup || this.isRolling"
-                min="1"
-                max="10"
-                @input="checkRemaining"
-                ref="round"
-              />
-            </label>
             <button
               class="btn btn-success"
-              :disabled="!isSetup"
               name="begin"
               v-text="isRolling ? 'Dừng' : 'Quay'"
               ref="begin"
             ></button>
-          </p>
-          <p class="form-group">
-            Chọn giải thưởng
-            <select class="form-control" name="prize" v-model="prize" required>
-              <option value="5">Giải đặc biệt</option>
-              <option value="1">Giải nhất</option>
-              <option value="2">Giải nhì</option>
-              <option value="3">Giải ba</option>
-              <option value="4">Giải khuyến khích</option>
-            </select>
           </p>
         </form>
       </div>
@@ -83,8 +36,8 @@
         <div class="modal-body" style="color: #000000">
             <table >
               <tr>
-                <th><b>Mã dự thưởng</b></th>
-                <th><b>Họ tên</b></th>
+                <th><b>#</b></th>
+                <th><b>MÃ SỐ TRÚNG GIẢI</b></th>
                 <!-- <th><b>Chức danh</b></th>
                 <th><b>Đơn vị công tác</b></th> -->
               </tr>
@@ -96,41 +49,6 @@
                 <!-- <th>{{ specialPrize.Position }}</th>
                 <th>{{ specialPrize.Company }}</th> -->
               </tr>
-              <tr v-for="goldPrize in prizes.goldPrizes" v-bind:key="goldPrize.Code"
-                  :hidden="!prizes.goldPrizes || !prizes.goldPrizes.length || prize != 1"
-                >
-                <th>{{ goldPrize.Code }}</th>
-                <th>{{ goldPrize.Name }}</th>
-                <!-- <th>{{ goldPrize.Position }}</th>
-                <th>{{ goldPrize.Company }}</th> -->
-              </tr>
-
-              <tr v-for="silverPrize in prizes.silverPrizes" v-bind:key="silverPrize.Code"
-                  :hidden="!prizes.silverPrizes || !prizes.silverPrizes.length || prize != 2"
-                >
-                <th>{{ silverPrize.Code }}</th>
-                <th>{{ silverPrize.Name }}</th>
-                <!-- <th>{{ silverPrize.Position }}</th>
-                <th>{{ silverPrize.Company }}</th> -->
-              </tr>
-
-              <tr v-for="bronzePrize in prizes.bronzePrizes" v-bind:key="bronzePrize.Code"
-                  :hidden="!prizes.bronzePrizes || !prizes.bronzePrizes.length || prize != 3"
-                >
-                <th>{{ bronzePrize.Code }}</th>
-                <th>{{ bronzePrize.Name }}</th>
-                <!-- <th>{{ bronzePrize.Position }}</th>
-                <th>{{ bronzePrize.Company }}</th> -->
-              </tr>
-
-              <tr v-for="plusPrize in prizes.plusPrizes" v-bind:key="plusPrize.Code"
-                  :hidden="!prizes.plusPrizes || !prizes.plusPrizes.length || prize != 4"
-                >
-                <th>{{ plusPrize.Code }}</th>
-                <th>{{ plusPrize.Name }}</th>
-                <!-- <th>{{ plusPrize.Position }}</th>
-                <th>{{ plusPrize.Company }}</th> -->
-              </tr>
             </table>
           </div>
       </modal>
@@ -140,8 +58,8 @@
 
 <script>
 import Vue from "vue";
-import XLSX from 'xlsx';
 import VModal from 'vue-js-modal';
+import func from '../vue-temp/vue-editor-bridge';
 
 Vue.use(VModal);
 export default {
@@ -153,18 +71,14 @@ export default {
   },
   data: function() {
     return {
-      candidates: [],
+      candidates:[],
       winners: [],
       total: null,
       round: null,
       isRolling: false,
       rollTimer: null,
       prizes: {
-        specialPrizes: [],
-        goldPrizes: [],
-        silverPrizes: [],
-        bronzePrizes: [],
-        plusPrizes: [],
+        specialPrizes: []
       },
       prize: null,
       setupType: 1,
@@ -173,6 +87,16 @@ export default {
     };
   },
   computed: {
+    defaultVal: {
+      get() {
+        let data = []
+        for (let index = 1; index < 200; index++) {
+          const element = index
+          data.push(element)
+        }
+        return data
+      }
+    },
     isSetup: {
       get() {
         return this.candidates.length > 0;
@@ -218,27 +142,9 @@ export default {
         round.focus();
       });
     },
-    async upload({ target }) {
-      this.setupType = 2;
-      let file = target.files[0];
-
-      if (!file) {
-        return;
-      }
-
-      await parserXlsx(file, (players) => {
-        for (let index = 0; index < players.length; index++) {
-          if (players[index] && players[index].Code) {
-             this.candidates.push(players[index].Code.toString());
-          }
-        }
-        this.listPlayer = players;
-        this.total = this.candidates.length;
-      });
-    },
     reset() {
       this.stopRoll();
-      this.candidates = [];
+      this.candidates = this.defaultVal();
       this.total = null;
       this.round = null;
       this.winners = [];
@@ -271,7 +177,12 @@ export default {
       }
     },
     shuffle() {
-      shuffle(this.candidates);
+      let data = []
+      for (let index = 1; index < 200; index++) {
+        const element = index
+        data.push(element)
+      }
+      shuffle(this.data);
     },
     startRoll() {
       if (!this.audio.paused) {
@@ -324,70 +235,6 @@ export default {
           this.prizes.specialPrizes = this.winners
         }
       }
-        
-      if (this.prize == 1 && this.isRolling) {
-        if (this.setupType == 2) {
-          this.prizes.goldPrizes = [];
-          for (let i = 0; i < this.listPlayer.length; i++) {
-            for (let j = 0; j < this.winners.length; j++) {
-              if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.goldPrizes.push(this.listPlayer[i]);  
-              }
-            }
-          }
-        }
-        else {
-          this.prizes.goldPrizes = this.winners
-        }
-      }
-
-      if (this.prize == 2 && this.isRolling) {
-        this.prizes.silverPrizes = [];
-        if (this.setupType == 2) {
-          for (let i = 0; i < this.listPlayer.length; i++) {
-            for (let j = 0; j < this.winners.length; j++) {
-              if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.silverPrizes.push(this.listPlayer[i]);
-              }
-            }
-          }
-        }
-        else {
-          this.prizes.silverPrizes = this.winners
-        }
-      }
-
-      if (this.prize == 3 && this.isRolling) {
-        if (this.setupType == 2) {
-          this.prizes.bronzePrizes = [];
-          for (let i = 0; i < this.listPlayer.length; i++) {
-            for (let j = 0; j < this.winners.length; j++) {
-              if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.bronzePrizes.push(this.listPlayer[i]);
-              }
-            }
-          }
-        }
-        else {
-          this.prizes.bronzePrizes = this.winners
-        }
-      }
-
-      if (this.prize == 4 && this.isRolling) {
-        if (this.setupType == 2) {
-          this.prizes.plusPrizes = [];
-          for (let i = 0; i < this.listPlayer.length; i++) {
-            for (let j = 0; j < this.winners.length; j++) {
-              if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.plusPrizes.push(this.listPlayer[i]);
-              }
-            }
-          }        
-        }
-        else {
-          this.prizes.plusPrizes = this.winners
-        }
-      }
       if (this.isRolling) {
         this.showMd();
       }
@@ -427,29 +274,6 @@ function fitDisplay() {
       }
     }
   });
-}
-/** HELPERS **/
-function fixdata(data) {
-	var o = "", l = 0, w = 10240;
-	for(; l<data.byteLength/w; ++l) o+=String.fromCharCode.apply(null,new Uint8Array(data.slice(l*w,l*w+w)));
-	o+=String.fromCharCode.apply(null, new Uint8Array(data.slice(l*w)));
-	return o;
-}
-
-/** PARSING **/
-async function parserXlsx(file, callback) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var results, 
-          data = e.target.result, 
-          fixedData = fixdata(data), 
-          workbook=XLSX.read(btoa(fixedData), {type: 'base64'}), 
-          firstSheetName = workbook.SheetNames[0], 
-          worksheet = workbook.Sheets[firstSheetName];
-      results=XLSX.utils.sheet_to_json(worksheet);
-      callback(results);
-    };
-    reader.readAsArrayBuffer(file);
 }
 
 function swap(items, i, j) {
