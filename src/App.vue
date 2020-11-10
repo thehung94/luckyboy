@@ -33,24 +33,13 @@
             X
           </button>
         </div>
-        <div class="modal-body" style="color: #000000">
-            <table >
-              <tr>
-                <th><b>#</b></th>
-                <th><b>MÃ SỐ TRÚNG GIẢI</b></th>
-                <!-- <th><b>Chức danh</b></th>
-                <th><b>Đơn vị công tác</b></th> -->
-              </tr>
-              <tr v-for="specialPrize in prizes.specialPrizes" v-bind:key="specialPrize.Code"
-                  :hidden="!prizes.specialPrizes || !prizes.specialPrizes.length || prize != 5"
-                >
-                <th>{{ specialPrize.Code }}</th>
-                <th>{{ specialPrize.Name }}</th>
-                <!-- <th>{{ specialPrize.Position }}</th>
-                <th>{{ specialPrize.Company }}</th> -->
-              </tr>
-            </table>
+        <div class="modal-body" style="color: #000000;">
+          <div class="container center">
+            <div class="vertical">
+              <span class="name " v-for="winner in winners" v-bind:key="winner">{{ winner }}</span>
+            </div>
           </div>
+        </div>
       </modal>
     </div>
   </div>
@@ -59,7 +48,6 @@
 <script>
 import Vue from "vue";
 import VModal from 'vue-js-modal';
-import func from '../vue-temp/vue-editor-bridge';
 
 Vue.use(VModal);
 export default {
@@ -70,11 +58,16 @@ export default {
     this.playSound("./ringtone/background.mp3");
   },
   data: function() {
+    let code = [];
+    for (let index = 0; index < 199; index++) {
+      const element = index;
+      code.push(element)
+    }
     return {
-      candidates: [],
+      candidates: code,
       winners: [],
-      total: null,
-      round: null,
+      total: 200,
+      round: 10,
       isRolling: false,
       rollTimer: null,
       prizes: {
@@ -89,7 +82,7 @@ export default {
   computed: {
     isSetup: {
       get() {
-        return this.candidates.length > 0;
+        return true;//this.candidates.length > 0;
       }
     },
     remaining: {
@@ -166,12 +159,7 @@ export default {
       }
     },
     shuffle() {
-      let data = []
-      for (let index = 1; index <= 200; index++) {
-        const element = index
-        data.push(element)
-      }
-      shuffle(this.data);
+      shuffle(this.candidates);
     },
     startRoll() {
       if (!this.audio.paused) {
@@ -193,7 +181,7 @@ export default {
         if (this.isRolling) {
           this.stopRoll();  
         }
-      }, 120000);
+      }, 30000);
     },
     stopRoll: function() {
       clearTimeout(this.rollTimer);
@@ -204,27 +192,13 @@ export default {
         this.audio.play();
         setTimeout(() => {
           this.audio.src = './ringtone/game-tada.mp3';
-          this.audio.play();  
+          this.audio.play();
         }, 1000);
         
       }
 
-      if (this.prize == 5 && this.isRolling) {
-        if (this.setupType == 2) {
-          this.prizes.specialPrizes = [];
-          for (let i = 0; i < this.listPlayer.length; i++) {
-            for (let j = 0; j < this.winners.length; j++) {
-              if (this.listPlayer[i].Code == this.winners[j]) {
-                this.prizes.specialPrizes.push(this.listPlayer[i]);  
-              }
-            }
-          }
-        }
-        else {
-          this.prizes.specialPrizes = this.winners
-        }
-      }
       if (this.isRolling) {
+        this.prizes.specialPrizes = this.winners
         this.showMd();
       }
       this.isRolling = false;
@@ -300,7 +274,7 @@ function pad(number, digits) {
 
 html {
   min-height: 720px;
-  background-image: url('/images/background1.jpg');
+  background-image: url('/images/backgroud.png');
   background-size: cover;
 }
 
@@ -341,7 +315,17 @@ input::-moz-focus-inner {
   width: 100%;
   text-align: center;
 }
-
+.vertical {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  font-size: 48px;
+}
+.center {
+  text-align: center;
+}
 #display {
   position: relative;
   height: 230px;
