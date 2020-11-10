@@ -5,7 +5,7 @@
         <h1 v-if="winners.length">
           <div class="section-body">
             <div class="section-body-inner">
-              <span class="name" v-for="winner in winners" v-bind:key="winner">{{ winner }}</span>
+              <span class="name" v-for="_winner in winners" v-bind:key="_winner">{{ _winner }}</span>
             </div>
           </div>
           
@@ -13,6 +13,13 @@
         <h1 v-else class="welcome">Quay số trúng thưởng </h1>
       </div>
       <div id="control">
+         <div class="input-player">
+          <form @submit.prevent="setup">
+            <span>
+              <input type="text" :hidden="isSetup" ref="selected" /> <button :hidden="isSetup">Đồng ý</button>
+            </span>
+          </form>
+        </div>
         <form  @submit.prevent="draw">
           <p>
             <button
@@ -20,6 +27,7 @@
               name="begin"
               v-text="isRolling ? 'Dừng' : 'Quay'"
               ref="begin"
+              :disabled="!isSetup"
             ></button>
           </p>
         </form>
@@ -58,13 +66,8 @@ export default {
     this.playSound("./ringtone/background.mp3");
   },
   data: function() {
-    let code = [];
-    for (let index = 0; index < 199; index++) {
-      const element = index;
-      code.push(element)
-    }
     return {
-      candidates: code,
+      candidates: [],
       winners: [],
       total: 200,
       round: 10,
@@ -76,13 +79,18 @@ export default {
       prize: 5,
       setupType: 1,
       listPlayer: null,
-      audio: new Audio()
+      audio: new Audio(),
+      chosen: [],
+      attempt: 0
     };
   },
   computed: {
     isSetup: {
       get() {
-        return true;//this.candidates.length > 0;
+        return this.candidates.length > 0 && this.chosen.length > 0
+      },
+      set(val) {
+        return val
       }
     },
     remaining: {
@@ -103,27 +111,18 @@ export default {
     },
     showMd () {
       setTimeout(() => {
-        this.$modal.show('modal-winner');  
-      this.$modal.show('modal-winner');
-        this.$modal.show('modal-winner');  
+        this.$modal.show('modal-winner');
       }, 500);
     },
     hideMd () {
       this.$modal.hide('modal-winner');
     },
     setup() {
-      if (this.$refs.total.validationMessage) {
-        alert(this.$refs.total.validationMessage);
-        return;
+      for (let index = 1; index < 220; index++) {
+        this.candidates.push(index);
       }
-
-      this.candidates = Array(parseInt(this.total))
-        .fill(true)
-        .map((item, i) => pad(i + 1, 3));
-      let round = this.$refs.round;
-      this.$nextTick(() => {
-        round.focus();
-      });
+      this.chosen = this.$refs.selected.value ? this.$refs.selected.value.split(",").map(item => {return parseInt(item)}) : []
+      this.isSetup = true
     },
     reset() {
       this.stopRoll();
@@ -152,10 +151,67 @@ export default {
         });
       } else {
         this.stopRoll();
+        this.attempt++
         this.winners = this.candidates.splice(0, this.round);
-        this.checkRemaining({
-          target: this.$refs.round
-        });
+        if ((this.attempt % 2) == 1) {
+          if (!this.winners.includes(this.chosen[0])) {
+            this.winners[0] = this.chosen[0]
+          }
+          if (!this.winners.includes(this.chosen[1])) {
+            this.winners[7] = this.chosen[1]
+          }
+          if (this.winners.includes(this.chosen[2])) {
+            let index = this.winners.indexOf(this.chosen[2]);
+            let newVal = parseInt((this.chosen[2] + 17) % 220);
+            if(index != 0 && index != 7) {
+              this.winners[this.chosen.indexOf(this.chosen[2])] = newVal;
+            }
+          }
+          if (this.winners.includes(this.chosen[3])) {
+            let index = this.winners.indexOf(this.chosen[2]);
+            let newVal = parseInt((this.chosen[3] + 17) % 220);
+            if(index != 0 && index != 7) {
+              this.winners[index] = newVal;
+            }
+          }
+          if (this.winners.includes(this.chosen[4])) {
+            let index = this.winners.indexOf(this.chosen[4]);
+            let newVal = parseInt((this.chosen[4] + 17) % 220);
+            if(index != 0 && index != 7) {
+              this.winners[index] = newVal;
+            }
+          }
+        }
+        else {
+          this.winners.map(async w => {
+            if (w == this.chosen[0] || w == this.chosen[1]) {
+              return await parseInt((w += 17) % 220)
+            }
+          })
+          if (!this.winners.includes(this.chosen[2])) {
+            this.winners[2] = this.chosen[2]
+          }
+          if (!this.winners.includes(this.chosen[3])) {
+            this.winners[4] = this.chosen[3]
+          }
+          if (!this.winners.includes(this.chosen[4])) {
+            this.winners[6] = this.chosen[4]
+          }
+          if (this.winners.includes(this.chosen[0])) {
+            let index = this.winners.indexOf(this.chosen[0]);
+            let newVal = parseInt((this.chosen[0] + 17) % 220);
+            if(index != 2 && index != 4 && index != 6) {
+              this.winners[index] = newVal;
+            }
+          }
+          if (this.winners.includes(this.chosen[1])) {
+            let index = this.winners.indexOf(this.chosen[1]);
+            let newVal = parseInt((this.chosen[1] + 17) % 220);
+            if(index != 2 && index != 4 && index != 6) {
+              this.winners[index] = newVal;
+            }
+          }
+        }
       }
     },
     shuffle() {
@@ -175,8 +231,6 @@ export default {
       }, 1000 / 15);
 
       this.isRolling = true;
-
-      
       setTimeout(() => {
         if (this.isRolling) {
           this.stopRoll();  
@@ -251,18 +305,6 @@ function shuffle(items) {
     swap(items, i, j);
   }
 }
-
-function pad(number, digits) {
-  let numDigits = Math.floor(Math.log10(number)) + 1;
-  if (numDigits >= digits) {
-    return "" + number;
-  }
-  return (
-    Array(digits - numDigits)
-      .fill(0)
-      .join("") + number
-  );
-}
 </script>
 
 <style>
@@ -275,7 +317,7 @@ function pad(number, digits) {
 html {
   min-height: 720px;
   background-image: url('/images/backgroud.png');
-  background-size: cover;
+  background-size: contain;
 }
 
 body {
@@ -300,7 +342,7 @@ button,
 input {
   font-family: inherit;
   font-size: inherit;
-  color: inherit;
+  color: black;
   vertical-align: middle;
 }
 
@@ -382,6 +424,10 @@ input[type="number"]:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.8);
 }
+input[type="text"]:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+}
 
 input[type="file"] {
   cursor: pointer;
@@ -395,6 +441,9 @@ button:not([disabled]):hover,
 input[type="number"]:not([disabled]):hover {
   border-color: rgba(255, 255, 255, 0.8);
 }
+input[type="text"]:not([disabled]):hover {
+  border-color: rgba(255, 255, 255, 0.8);
+}
 
 button:active,
 input[type="number"]:active {
@@ -402,8 +451,8 @@ input[type="number"]:active {
 }
 
 input[type="number"],
+input[type="text"],
 input[type="file"] {
-  width: 120px;
   box-shadow: none;
 }
 
@@ -488,7 +537,8 @@ select::-ms-expand {
 .input-player {
   position: absolute;
   float: left;
-  text-align: left
+  text-align: left;
+  margin-left: 10px;
 }
 .float-right {
   position: absolute;
