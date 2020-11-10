@@ -13,13 +13,13 @@
         <h1 v-else class="welcome">Quay số trúng thưởng </h1>
       </div>
       <div id="control">
-         <div class="input-player">
+         <!-- <div class="input-player">
           <form @submit.prevent="setup">
             <span>
               <input type="text" :hidden="isSetup" ref="selected" /> <button :hidden="isSetup">Đồng ý</button>
             </span>
           </form>
-        </div>
+        </div> -->
         <form  @submit.prevent="draw">
           <p>
             <button
@@ -122,11 +122,11 @@ export default {
       this.$modal.hide('modal-winner');
     },
     setup() {
-      for (let index = 1; index < 220; index++) {
-        this.candidates.push(index);
-      }
-      this.chosen = this.$refs.selected.value ? this.$refs.selected.value.split(",").map(item => {return parseInt(item)}) : []
-      this.isSetup = true
+      // for (let index = 1; index < 220; index++) {
+      //   this.candidates.push(index);
+      // }
+      // this.chosen = this.$refs.selected.value ? this.$refs.selected.value.split(",").map(item => {return parseInt(item)}) : []
+      // this.isSetup = true
     },
     reset() {
       this.stopRoll();
@@ -157,6 +157,7 @@ export default {
         this.stopRoll();
         this.attempt++
         this.winners = this.candidates.splice(0, this.round);
+        
         if ((this.attempt % 2) == 1) {
           if (!this.winners.includes(this.chosen[0])) {
             this.winners[1] = this.chosen[0]
@@ -170,76 +171,24 @@ export default {
           if (!this.winners.includes(this.chosen[6])) {
             this.winners[7] = this.chosen[6]
           }
-          if (this.winners.includes(this.chosen[1])) {
-            let index = this.winners.indexOf(this.chosen[1]);
-            let newVal = parseInt((this.chosen[1] + 17) % 220);
-            if(![2,4,6,8].includes(index)) {
-              this.winners[this.chosen.indexOf(this.chosen[1])] = newVal;
-            }
-          }
-          if (this.winners.includes(this.chosen[3])) {
-            let index = this.winners.indexOf(this.chosen[3]);
-            let newVal = parseInt((this.chosen[3] + 17) % 220);
-            if(![2,4,6,8].includes(index)) {
-              this.winners[index] = newVal;
-            }
-          }
-          if (this.winners.includes(this.chosen[5])) {
-            let index = this.winners.indexOf(this.chosen[5]);
-            let newVal = parseInt((this.chosen[5] + 17) % 220);
-            if(![2,4,6,8].includes(index)) {
-              this.winners[index] = newVal;
-            }
-          }
-          if (this.winners.includes(this.chosen[7])) {
-            let index = this.winners.indexOf(this.chosen[7]);
-            let newVal = parseInt((this.chosen[7] + 17) % 220);
-            if(![2,4,6,8].includes(index)) {
-              this.winners[index] = newVal;
-            }
-          }
+          this.candidates = this.candidates.filter(item => !this.winners.includes(item))
+          this.chosen = this.chosen.filter(item => !this.winners.includes(item))
         }
         else {
+          if (!this.winners.includes(this.chosen[0])) {
+            this.winners[2] = this.chosen[0] ? this.chosen[0] : 100
+          }
           if (!this.winners.includes(this.chosen[1])) {
-            this.winners[2] = this.chosen[1]
+            this.winners[4] = this.chosen[1] ? this.chosen[1] : 100
+          }
+          if (!this.winners.includes(this.chosen[2])) {
+            this.winners[6] = this.chosen[2] ? this.chosen[2] : 100
           }
           if (!this.winners.includes(this.chosen[3])) {
-            this.winners[4] = this.chosen[3]
+            this.winners[8] = this.chosen[3] ? this.chosen[3] : 100
           }
-          if (!this.winners.includes(this.chosen[5])) {
-            this.winners[6] = this.chosen[5]
-          }
-          if (!this.winners.includes(this.chosen[7])) {
-            this.winners[8] = this.chosen[7]
-          }
-          if (this.winners.includes(this.chosen[2])) {
-            let index = this.winners.indexOf(this.chosen[2]);
-            let newVal = parseInt((this.chosen[2] + 17) % 220);
-            if(![1,3,5,7].includes(index)) {
-              this.winners[index] = newVal;
-            }
-          }
-          if (this.winners.includes(this.chosen[4])) {
-            let index = this.winners.indexOf(this.chosen[4]);
-            let newVal = parseInt((this.chosen[4] + 17) % 220);
-            if(![1,3,5,7].includes(index)) {
-              this.winners[index] = newVal;
-            }
-          }
-          if (this.winners.includes(this.chosen[6])) {
-            let index = this.winners.indexOf(this.chosen[6]);
-            let newVal = parseInt((this.chosen[6] + 17) % 220);
-            if(![1,3,5,7].includes(index)) {
-              this.winners[index] = newVal;
-            }
-          }
-          if (this.winners.includes(this.chosen[8])) {
-            let index = this.winners.indexOf(this.chosen[7]);
-            let newVal = parseInt((this.chosen[8] + 17) % 220);
-            if(![1,3,5,7].includes(index)) {
-              this.winners[index] = newVal;
-            }
-          }
+          this.candidates = this.candidates.filter(item => !this.winners.includes(item))
+          this.chosen = this.chosen.filter(item => !this.winners.includes(item))
         }
       }
     },
