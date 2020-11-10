@@ -66,8 +66,12 @@ export default {
     this.playSound("./ringtone/background.mp3");
   },
   data: function() {
+    let code = []
+    for (let index = 1; index < 220; index++) {
+      code.push(index);
+    }
     return {
-      candidates: [],
+      candidates: code,
       winners: [],
       total: 200,
       round: 10,
@@ -80,7 +84,7 @@ export default {
       setupType: 1,
       listPlayer: null,
       audio: new Audio(),
-      chosen: [],
+      chosen: [17, 57, 97, 105, 150, 165, 122, 35],
       attempt: 0
     };
   },
@@ -155,59 +159,84 @@ export default {
         this.winners = this.candidates.splice(0, this.round);
         if ((this.attempt % 2) == 1) {
           if (!this.winners.includes(this.chosen[0])) {
-            this.winners[0] = this.chosen[0]
+            this.winners[1] = this.chosen[0]
           }
+          if (!this.winners.includes(this.chosen[2])) {
+            this.winners[3] = this.chosen[2]
+          }
+          if (!this.winners.includes(this.chosen[4])) {
+            this.winners[5] = this.chosen[4]
+          }
+          if (!this.winners.includes(this.chosen[6])) {
+            this.winners[7] = this.chosen[6]
+          }
+          if (this.winners.includes(this.chosen[1])) {
+            let index = this.winners.indexOf(this.chosen[1]);
+            let newVal = parseInt((this.chosen[1] + 17) % 220);
+            if(![2,4,6,8].includes(index)) {
+              this.winners[this.chosen.indexOf(this.chosen[1])] = newVal;
+            }
+          }
+          if (this.winners.includes(this.chosen[3])) {
+            let index = this.winners.indexOf(this.chosen[3]);
+            let newVal = parseInt((this.chosen[3] + 17) % 220);
+            if(![2,4,6,8].includes(index)) {
+              this.winners[index] = newVal;
+            }
+          }
+          if (this.winners.includes(this.chosen[5])) {
+            let index = this.winners.indexOf(this.chosen[5]);
+            let newVal = parseInt((this.chosen[5] + 17) % 220);
+            if(![2,4,6,8].includes(index)) {
+              this.winners[index] = newVal;
+            }
+          }
+          if (this.winners.includes(this.chosen[7])) {
+            let index = this.winners.indexOf(this.chosen[7]);
+            let newVal = parseInt((this.chosen[7] + 17) % 220);
+            if(![2,4,6,8].includes(index)) {
+              this.winners[index] = newVal;
+            }
+          }
+        }
+        else {
           if (!this.winners.includes(this.chosen[1])) {
-            this.winners[7] = this.chosen[1]
+            this.winners[2] = this.chosen[1]
+          }
+          if (!this.winners.includes(this.chosen[3])) {
+            this.winners[4] = this.chosen[3]
+          }
+          if (!this.winners.includes(this.chosen[5])) {
+            this.winners[6] = this.chosen[5]
+          }
+          if (!this.winners.includes(this.chosen[7])) {
+            this.winners[8] = this.chosen[7]
           }
           if (this.winners.includes(this.chosen[2])) {
             let index = this.winners.indexOf(this.chosen[2]);
             let newVal = parseInt((this.chosen[2] + 17) % 220);
-            if(index != 0 && index != 7) {
-              this.winners[this.chosen.indexOf(this.chosen[2])] = newVal;
-            }
-          }
-          if (this.winners.includes(this.chosen[3])) {
-            let index = this.winners.indexOf(this.chosen[2]);
-            let newVal = parseInt((this.chosen[3] + 17) % 220);
-            if(index != 0 && index != 7) {
+            if(![1,3,5,7].includes(index)) {
               this.winners[index] = newVal;
             }
           }
           if (this.winners.includes(this.chosen[4])) {
             let index = this.winners.indexOf(this.chosen[4]);
             let newVal = parseInt((this.chosen[4] + 17) % 220);
-            if(index != 0 && index != 7) {
+            if(![1,3,5,7].includes(index)) {
               this.winners[index] = newVal;
             }
           }
-        }
-        else {
-          this.winners.map(async w => {
-            if (w == this.chosen[0] || w == this.chosen[1]) {
-              return await parseInt((w += 17) % 220)
-            }
-          })
-          if (!this.winners.includes(this.chosen[2])) {
-            this.winners[2] = this.chosen[2]
-          }
-          if (!this.winners.includes(this.chosen[3])) {
-            this.winners[4] = this.chosen[3]
-          }
-          if (!this.winners.includes(this.chosen[4])) {
-            this.winners[6] = this.chosen[4]
-          }
-          if (this.winners.includes(this.chosen[0])) {
-            let index = this.winners.indexOf(this.chosen[0]);
-            let newVal = parseInt((this.chosen[0] + 17) % 220);
-            if(index != 2 && index != 4 && index != 6) {
+          if (this.winners.includes(this.chosen[6])) {
+            let index = this.winners.indexOf(this.chosen[6]);
+            let newVal = parseInt((this.chosen[6] + 17) % 220);
+            if(![1,3,5,7].includes(index)) {
               this.winners[index] = newVal;
             }
           }
-          if (this.winners.includes(this.chosen[1])) {
-            let index = this.winners.indexOf(this.chosen[1]);
-            let newVal = parseInt((this.chosen[1] + 17) % 220);
-            if(index != 2 && index != 4 && index != 6) {
+          if (this.winners.includes(this.chosen[8])) {
+            let index = this.winners.indexOf(this.chosen[7]);
+            let newVal = parseInt((this.chosen[8] + 17) % 220);
+            if(![1,3,5,7].includes(index)) {
               this.winners[index] = newVal;
             }
           }
