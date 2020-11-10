@@ -294,8 +294,8 @@ function shuffle(items) {
 
 html {
   min-height: 720px;
-  background-image: url('/images/backgroud.png');
-  background-size: contain;
+  background-image: url('/images/backgroud.png') no-repeat center fixed;
+  background-size: cover;
 }
 
 body {
