@@ -560,7 +560,7 @@ ul {
 }
 
 #display {
-  top: 40vh;
+  top: 43vh;
 }
 table {
   font-family: arial, sans-serif;
