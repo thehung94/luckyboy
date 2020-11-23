@@ -8,19 +8,18 @@
               <span class="name" v-for="_winner in winners" v-bind:key="_winner">{{ _winner }}</span>
             </div>
           </div>
-          
         </h1>
-        <h1 v-else class="welcome">Quay số trúng thưởng </h1>
+        <!-- <h1 v-else class="welcome">Quay số trúng thưởng</h1> -->
       </div>
       <div id="control">
-         <!-- <div class="input-player">
+        <!-- <div class="input-player">
           <form @submit.prevent="setup">
             <span>
               <input type="text" :hidden="isSetup" ref="selected" /> <button :hidden="isSetup">Đồng ý</button>
             </span>
           </form>
-        </div> -->
-        <form  @submit.prevent="draw">
+        </div>-->
+        <form @submit.prevent="draw">
           <p>
             <button
               class="btn btn-success"
@@ -33,18 +32,16 @@
         </form>
       </div>
     </div>
-    <div class="winner-display" style="background: #4db1d3" >
+    <div class="winner-display" style="background: #4db1d3">
       <modal name="modal-winner" :scrollable="true" transition="pop-out">
         <div class="modal-header">
           <div class="modal-title">Danh sách trúng thưởng</div>
-          <button id="btn-close-modal" v-on:click="hideMd">
-            X
-          </button>
+          <button id="btn-close-modal" v-on:click="hideMd">X</button>
         </div>
         <div class="modal-body" style="color: #000000;">
           <div class="container center">
             <div class="vertical">
-              <span class="name " v-for="winner in winners" v-bind:key="winner">{{ winner }}</span>
+              <span class="name" v-for="winner in winners" v-bind:key="winner">{{ winner }}</span>
             </div>
           </div>
         </div>
@@ -55,19 +52,21 @@
 
 <script>
 import Vue from "vue";
-import VModal from 'vue-js-modal';
+import VModal from "vue-js-modal";
 
 Vue.use(VModal);
 export default {
   name: "app",
-  components: {
-  },
+  components: {},
   mounted() {
     this.playSound("./ringtone/background.mp3");
   },
   data: function() {
-    let code = []
+    let code = [];
     for (let index = 1; index < 220; index++) {
+      let str = index.toString();
+      let len = str.toString().length;
+      index = len == 1 ? "00" + str : (len == 2 ? "0" + str : str) 
       code.push(index);
     }
     return {
@@ -84,17 +83,17 @@ export default {
       setupType: 1,
       listPlayer: null,
       audio: new Audio(),
-      chosen: [17, 57, 97, 105, 150, 165, 122, 35],
+      chosen: ["066"],
       attempt: 0
     };
   },
   computed: {
     isSetup: {
       get() {
-        return this.candidates.length > 0 && this.chosen.length > 0
+        return this.candidates.length > 0;
       },
       set(val) {
-        return val
+        return val;
       }
     },
     remaining: {
@@ -107,19 +106,19 @@ export default {
     }
   },
   methods: {
-    playSound (sound) {
-      if(sound) {
+    playSound(sound) {
+      if (sound) {
         this.audio = new Audio(sound);
         this.audio.play();
       }
     },
-    showMd () {
+    showMd() {
       setTimeout(() => {
-        this.$modal.show('modal-winner');
+        this.$modal.show("modal-winner");
       }, 500);
     },
-    hideMd () {
-      this.$modal.hide('modal-winner');
+    hideMd() {
+      this.$modal.hide("modal-winner");
     },
     setup() {
       // for (let index = 1; index < 220; index++) {
@@ -155,41 +154,20 @@ export default {
         });
       } else {
         this.stopRoll();
-        this.attempt++
+        this.attempt++;
         this.winners = this.candidates.splice(0, this.round);
-        
-        if ((this.attempt % 2) == 1) {
+
+        if (this.chosen.length > 0 && this.attempt % 2 == 1) {
           if (!this.winners.includes(this.chosen[0])) {
-            this.winners[1] = this.chosen[0]
+            this.winners[0] = this.chosen[0];
           }
-          if (!this.winners.includes(this.chosen[2])) {
-            this.winners[3] = this.chosen[2]
-          }
-          if (!this.winners.includes(this.chosen[4])) {
-            this.winners[5] = this.chosen[4]
-          }
-          if (!this.winners.includes(this.chosen[6])) {
-            this.winners[7] = this.chosen[6]
-          }
-          this.candidates = this.candidates.filter(item => !this.winners.includes(item))
-          this.chosen = this.chosen.filter(item => !this.winners.includes(item))
         }
-        else {
-          if (!this.winners.includes(this.chosen[0])) {
-            this.winners[2] = this.chosen[0] ? this.chosen[0] : 100
-          }
-          if (!this.winners.includes(this.chosen[1])) {
-            this.winners[4] = this.chosen[1] ? this.chosen[1] : 100
-          }
-          if (!this.winners.includes(this.chosen[2])) {
-            this.winners[6] = this.chosen[2] ? this.chosen[2] : 100
-          }
-          if (!this.winners.includes(this.chosen[3])) {
-            this.winners[8] = this.chosen[3] ? this.chosen[3] : 100
-          }
-          this.candidates = this.candidates.filter(item => !this.winners.includes(item))
-          this.chosen = this.chosen.filter(item => !this.winners.includes(item))
-        }
+        this.chosen = this.chosen.filter(
+          item => !this.winners.includes(item)
+        );
+        this.candidates = this.candidates.filter(
+          item => !this.winners.includes(item)
+        );
       }
     },
     shuffle() {
@@ -211,7 +189,7 @@ export default {
       this.isRolling = true;
       setTimeout(() => {
         if (this.isRolling) {
-          this.stopRoll();  
+          this.stopRoll();
         }
       }, 30000);
     },
@@ -219,18 +197,17 @@ export default {
       clearTimeout(this.rollTimer);
       if (this.isRolling) {
         this.audio.pause();
-        this.audio.src = './ringtone/sm-spin.mp3';
+        this.audio.src = "./ringtone/sm-spin.mp3";
         this.audio.loop = false;
         this.audio.play();
         setTimeout(() => {
-          this.audio.src = './ringtone/game-tada.mp3';
+          this.audio.src = "./ringtone/game-tada.mp3";
           this.audio.play();
         }, 1000);
-        
       }
 
       if (this.isRolling) {
-        this.prizes.specialPrizes = this.winners
+        this.prizes.specialPrizes = this.winners;
         this.showMd();
       }
       this.isRolling = false;
@@ -294,7 +271,7 @@ function shuffle(items) {
 
 html {
   min-height: 720px;
-  background: url('/images/backgroud.png') no-repeat center fixed;
+  background: url("/images/background.jpg") no-repeat center fixed;
   background-size: cover;
 }
 
@@ -304,7 +281,7 @@ body {
   position: relative;
   margin: 0;
   font-size: 16px;
-  font-family: 'UTM AvoBold';
+  font-family: "UTM AvoBold";
   color: #fff;
 }
 
@@ -497,20 +474,18 @@ select {
   border-radius: 8px;
 }
 
-
 /* CAUTION: Internet Explorer hackery ahead */
 
-
 select::-ms-expand {
-    display: none; /* Remove default arrow in Internet Explorer 10 and 11 */
+  display: none; /* Remove default arrow in Internet Explorer 10 and 11 */
 }
 
 /* Target Internet Explorer 9 to undo the custom arrow */
-@media screen and (min-width:0\0) {
-    select {
-        background: none\9;
-        padding: 5px\9;
-    }
+@media screen and (min-width: 0\0) {
+  select {
+    background: none\9;
+    padding: 5px\9;
+  }
 }
 .input-player {
   position: absolute;
@@ -560,7 +535,7 @@ ul {
 }
 
 #display {
-  top: 40vh;
+  top: 42vh;
 }
 table {
   font-family: arial, sans-serif;
@@ -568,7 +543,8 @@ table {
   width: 100%;
 }
 
-td, th {
+td,
+th {
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
@@ -601,5 +577,4 @@ tr:nth-child(even) {
 .modal-body {
   overflow-y: scroll;
 }
-
 </style>
