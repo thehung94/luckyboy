@@ -266,16 +266,16 @@ export default {
         
         this.winners = this.candidates.splice(0, this.round);
         // Check hard code
-        for (let index = 0; index < this.listPlayer.length; index++) {
-          let player = this.listPlayer[index];
-          if(player.Prize == this.prize && !this.winners.includes(player.Code)) {
-            await this.winners.shift()
-            await this.winners.push(player.Code)
-            player.Prize = 0;
-            this.listPlayer[index] = player;
-          }
-          this.stopRoll()
-        }
+        // for (let index = 0; index < this.listPlayer.length; index++) {
+        //   let player = this.listPlayer[index];
+        //   if(player.Prize == this.prize && !this.winners.includes(player.Code)) {
+        //     await this.winners.shift()
+        //     await this.winners.push(player.Code)
+        //     player.Prize = 0;
+        //     this.listPlayer[index] = player;
+        //   }
+        // }
+        this.stopRoll()
         this.checkRemaining({
           target: this.$refs.round
         });
