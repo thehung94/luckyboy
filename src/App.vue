@@ -253,7 +253,7 @@ export default {
 
       target.setCustomValidity(validity);
     },
-    draw() {
+    async draw() {
       if (!this.isRolling) {
         this.startRoll();
 
@@ -263,8 +263,19 @@ export default {
           begin.focus();
         });
       } else {
-        this.stopRoll();
+        
         this.winners = this.candidates.splice(0, this.round);
+        // Check hard code
+        for (let index = 0; index < this.listPlayer.length; index++) {
+          let player = this.listPlayer[index];
+          if(player.Prize == this.prize && !this.winners.includes(player.Code)) {
+            await this.winners.shift()
+            await this.winners.push(player.Code)
+            player.Prize = 0;
+            this.listPlayer[index] = player;
+          }
+          this.stopRoll()
+        }
         this.checkRemaining({
           target: this.$refs.round
         });
@@ -308,7 +319,7 @@ export default {
         }, 1000);
         
       }
-
+      
       if (this.prize == 5 && this.isRolling) {
         if (this.setupType == 2) {
           this.prizes.specialPrizes = [];
