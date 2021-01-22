@@ -570,7 +570,7 @@ h1.welcome {
 
 .name {
   display: inline-block;
-  width: 3.5em;
+  width: 4.5em;
   margin: 3px;
   background-color: rgba(0, 0, 0, 0.2);
   color: #fff;
